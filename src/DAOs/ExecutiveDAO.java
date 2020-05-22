@@ -132,6 +132,28 @@ public class ExecutiveDAO {
 		}
 	}
 	
+	public void addMember(String firstName, String lastName, String email, String major) throws Exception {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		try {
+			stmt = conn.prepareStatement("INSERT INTO member(first_name, last_name, email, major, status) VALUES(?, ?, ?, ?, ?)");
+			
+			stmt.setString(1, firstName);
+			stmt.setString(2, lastName);
+			stmt.setString(3, email);
+			stmt.setString(4, major);
+			stmt.setString(5, "Prospective");
+			
+			stmt.executeUpdate();
+			
+		} finally {
+		
+			close(stmt, rs);
+			
+		}
+	}
+	
 	private Executive convertRowToExecutive(ResultSet rs) throws SQLException {
 		
 		int id = rs.getInt("executive_id");

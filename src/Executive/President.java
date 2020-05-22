@@ -6,6 +6,11 @@ public class President extends Executive {
 		super(id, firstName, lastName, email, major, status, password);
 	}
 
+	public President() {
+		// TODO Auto-generated constructor stub
+		super();
+	}
+
 	@Override
 	public void awardPoints() {
 		// TODO Auto-generated method stub

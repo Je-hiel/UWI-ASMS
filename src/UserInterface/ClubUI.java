@@ -13,6 +13,8 @@ import javax.swing.SwingConstants;
 
 import java.util.*;
 import DAOs.MemberDAO;
+import Executive.Executive;
+import Club.ClubController;
 import Club.Member;
 
 import javax.swing.JPasswordField;
@@ -35,12 +37,13 @@ import javax.swing.JTable;
 
 public class ClubUI {
 	
+	private ClubController controller;
 	private MemberDAO memberDAO;
 
 	private JFrame frmUwiAsms;
 	private JLayeredPane layeredPane;
 	private JTextField lastNameTextField;
-	private JPasswordField passwordField;
+	private JPasswordField passwordTextField;
 	private JPanel login;
 	private JPanel home;
 	private JPanel addMemberMenuItemPanel;
@@ -61,17 +64,32 @@ public class ClubUI {
 	private JPanel editEventPanel;
 	private JPanel viewEventPanel;
 	private JPanel removeEventPanel;
-	private JLabel lblNewLabel;
 	private JLabel lblNewLabel_1;
 	private JLabel lblNewLabel_3;
 	private JLabel lblNewLabel_4;
 	private JLabel lblNewLabel_5;
 	private JLabel lblNewLabel_6;
-	private JLabel lblNewLabel_7;
 	private JLabel lblNewLabel_8;
-	private JTextField textField;
+	private JTextField memberLastNameTextField;
 	private JTextField memberIDTextField;
 	private JTable table;
+	private JLabel lblNewLabel;
+	private JLabel lblNewLabel_2;
+	private JLabel lblNewLabel_9;
+	private JLabel lblNewLabel_10;
+	private JLabel lblNewLabel_11;
+	private JTextField addMemberFirstNameTextField;
+	private JTextField addMemberLastNameTextField;
+	private JTextField addMemberEmailTextField;
+	private JTextField addMemberMajorTextField;
+	private JButton addMemberButton;
+	private JLabel enterEventNameLabel;
+	private JLabel enterEventIDLabel;
+	private JTextField eventNameTextField;
+	private JTextField eventIDTextField;
+	private JButton searchEventButton;
+	private JScrollPane eventScrollPane;
+	private JTable table_1;
 
 	/**
 	 * Launch the application.
@@ -93,6 +111,7 @@ public class ClubUI {
 	 * Create the application.
 	 */
 	public ClubUI() {
+		controller = new ClubController();
 		initialize();
 	}
 
@@ -138,17 +157,43 @@ public class ClubUI {
 		lastNameTextField.setColumns(10);
 		
 		JLabel passwordLabel = new JLabel("Password");
-		passwordLabel.setBounds(477, 562, 46, 14);
+		passwordLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		passwordLabel.setBounds(440, 562, 83, 14);
 		login.add(passwordLabel);
 		
-		passwordField = new JPasswordField();
-		passwordField.setBounds(551, 555, 205, 29);
-		login.add(passwordField);
+		passwordTextField = new JPasswordField();
+		passwordTextField.setBounds(551, 555, 205, 29);
+		login.add(passwordTextField);
 		
 		JButton loginButton = new JButton("Login");
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				switchPanel(home);
+				// switchPanel(home);
+				
+				try {	
+					String lastName = lastNameTextField.getText();
+					char[] passwordData = passwordTextField.getPassword();
+					String password = new String(passwordData);
+					
+					if ((lastName != null && lastName.trim().length() > 0) || (password != null && password.trim().length() > 0)) {
+						Executive executive = controller.login(lastName, password);
+						
+						if (executive != null) {
+							lastNameTextField.setText("");
+							passwordTextField.setText("");
+							switchPanel(home);
+						} else {
+							passwordTextField.setText("");
+							JOptionPane.showMessageDialog(frmUwiAsms, "Error: Could not sign in with those credentials", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						JOptionPane.showMessageDialog(frmUwiAsms, "Error: Could not sign in with those credentials", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					
+				} catch (Exception exc) {
+					JOptionPane.showMessageDialog(frmUwiAsms, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE);
+				}
+
 			}
 		});
 		loginButton.setBounds(596, 653, 89, 23);
@@ -264,9 +309,9 @@ public class ClubUI {
 		removeMemberLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		removeMemberMenuItemPanel.add(removeMemberLabel);
 		
-		JLabel executiveLabel = new JLabel("Welcome Executive");
+		JLabel executiveLabel = new JLabel("Welcome " + controller.getExecutivePosition() + " " + controller.getExecutiveLastName());
 		executiveLabel.setForeground(Color.WHITE);
-		executiveLabel.setBounds(47, 82, 109, 14);
+		executiveLabel.setBounds(28, 81, 156, 14);
 		menuPanel.add(executiveLabel);
 		
 		awardPointsMenuItemPanel = new JPanel();
@@ -409,9 +454,74 @@ public class ClubUI {
 		
 		addMemberPanel = new JPanel();
 		mainPanel.add(addMemberPanel, "name_2515850684900");
+		addMemberPanel.setLayout(null);
 		
-		lblNewLabel = new JLabel("addM");
+		lblNewLabel = new JLabel("Add Member");
+		lblNewLabel.setBounds(494, 39, 81, 14);
 		addMemberPanel.add(lblNewLabel);
+		
+		lblNewLabel_2 = new JLabel("First Name");
+		lblNewLabel_2.setBounds(94, 122, 72, 14);
+		addMemberPanel.add(lblNewLabel_2);
+		
+		lblNewLabel_9 = new JLabel("Last Name");
+		lblNewLabel_9.setBounds(94, 235, 72, 14);
+		addMemberPanel.add(lblNewLabel_9);
+		
+		lblNewLabel_10 = new JLabel("Email");
+		lblNewLabel_10.setBounds(94, 350, 72, 14);
+		addMemberPanel.add(lblNewLabel_10);
+		
+		lblNewLabel_11 = new JLabel("Major");
+		lblNewLabel_11.setBounds(94, 476, 72, 14);
+		addMemberPanel.add(lblNewLabel_11);
+		
+		addMemberFirstNameTextField = new JTextField();
+		addMemberFirstNameTextField.setBounds(94, 151, 218, 30);
+		addMemberPanel.add(addMemberFirstNameTextField);
+		addMemberFirstNameTextField.setColumns(10);
+		
+		addMemberLastNameTextField = new JTextField();
+		addMemberLastNameTextField.setColumns(10);
+		addMemberLastNameTextField.setBounds(94, 260, 218, 30);
+		addMemberPanel.add(addMemberLastNameTextField);
+		
+		addMemberEmailTextField = new JTextField();
+		addMemberEmailTextField.setColumns(10);
+		addMemberEmailTextField.setBounds(94, 375, 218, 30);
+		addMemberPanel.add(addMemberEmailTextField);
+		
+		addMemberMajorTextField = new JTextField();
+		addMemberMajorTextField.setColumns(10);
+		addMemberMajorTextField.setBounds(94, 501, 218, 30);
+		addMemberPanel.add(addMemberMajorTextField);
+		
+		addMemberButton = new JButton("Add");
+		addMemberButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					String firstName = addMemberFirstNameTextField.getText();
+					String lastName = addMemberLastNameTextField.getText();
+					String email = addMemberEmailTextField.getText();
+					String major = addMemberMajorTextField.getText();
+					
+					if ((firstName != null && firstName.trim().length() > 0) || (lastName != null && lastName.trim().length() > 0) || (email != null && email.trim().length() > 0) || (major != null && major.trim().length() > 0)) {
+						addMemberFirstNameTextField.setText("");
+						addMemberLastNameTextField.setText("");
+						addMemberEmailTextField.setText("");
+						addMemberMajorTextField.setText("");
+						controller.addMember(firstName, lastName, email, major);
+						JOptionPane.showMessageDialog(addMemberPanel, "Success: Member " + firstName + " " + lastName + " added.", "Success", JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(addMemberPanel, "Error: One or more fields empty", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(addMemberPanel, "Error: " + e1, "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		addMemberButton.setBounds(94, 607, 89, 23);
+		addMemberPanel.add(addMemberButton);
 		
 		editMemberPanel = new JPanel();
 		mainPanel.add(editMemberPanel, "name_2538146867000");
@@ -427,10 +537,10 @@ public class ClubUI {
 		enterLastNameLabel.setBounds(50, 47, 153, 14);
 		viewMemberPanel.add(enterLastNameLabel);
 		
-		textField = new JTextField();
-		textField.setBounds(214, 44, 145, 20);
-		viewMemberPanel.add(textField);
-		textField.setColumns(10);
+		memberLastNameTextField = new JTextField();
+		memberLastNameTextField.setBounds(214, 44, 145, 20);
+		viewMemberPanel.add(memberLastNameTextField);
+		memberLastNameTextField.setColumns(10);
 		
 		JLabel enterMemberIDLabel = new JLabel("Enter member ID #");
 		enterMemberIDLabel.setBounds(483, 47, 117, 14);
@@ -441,8 +551,8 @@ public class ClubUI {
 		viewMemberPanel.add(memberIDTextField);
 		memberIDTextField.setColumns(10);
 		
-		Button searchButton = new Button("Search");
-		searchButton.addActionListener(new ActionListener() {
+		Button searchMemberButton = new Button("Search");
+		searchMemberButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Get last name from lastNameTextField
 				
@@ -453,7 +563,7 @@ public class ClubUI {
 				// Print out members
 				
 				try {
-					String lastName = lastNameTextField.getText();
+					String lastName = memberLastNameTextField.getText();
 					String id = memberIDTextField.getText();
 					int memberID;
 					
@@ -481,8 +591,8 @@ public class ClubUI {
 				}
 			}
 		});
-		searchButton.setBounds(919, 39, 70, 22);
-		viewMemberPanel.add(searchButton);
+		searchMemberButton.setBounds(919, 39, 70, 22);
+		viewMemberPanel.add(searchMemberButton);
 		
 		JScrollPane memberScrollPane = new JScrollPane();
 		memberScrollPane.setBounds(50, 107, 939, 693);
@@ -517,9 +627,36 @@ public class ClubUI {
 		
 		viewEventPanel = new JPanel();
 		mainPanel.add(viewEventPanel, "name_5763784440500");
+		viewEventPanel.setLayout(null);
 		
-		lblNewLabel_7 = new JLabel("viewE");
-		viewEventPanel.add(lblNewLabel_7);
+		enterEventNameLabel = new JLabel("Enter event name");
+		enterEventNameLabel.setBounds(50, 47, 153, 14);
+		viewEventPanel.add(enterEventNameLabel);
+		
+		enterEventIDLabel = new JLabel("Event ID");
+		enterEventIDLabel.setBounds(502, 48, 46, 14);
+		viewEventPanel.add(enterEventIDLabel);
+		
+		eventNameTextField = new JTextField();
+		eventNameTextField.setBounds(187, 44, 172, 20);
+		viewEventPanel.add(eventNameTextField);
+		eventNameTextField.setColumns(10);
+		
+		eventIDTextField = new JTextField();
+		eventIDTextField.setBounds(558, 45, 86, 20);
+		viewEventPanel.add(eventIDTextField);
+		eventIDTextField.setColumns(10);
+		
+		searchEventButton = new JButton("Search");
+		searchEventButton.setBounds(919, 39, 70, 22);
+		viewEventPanel.add(searchEventButton);
+		
+		eventScrollPane = new JScrollPane();
+		eventScrollPane.setBounds(50, 107, 939, 693);
+		viewEventPanel.add(eventScrollPane);
+		
+		table_1 = new JTable();
+		eventScrollPane.setViewportView(table_1);
 		
 		removeEventPanel = new JPanel();
 		mainPanel.add(removeEventPanel, "name_5767557473100");

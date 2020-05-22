@@ -1,11 +1,10 @@
 package Club;
 
-import Executive.Executive;
+import Executive.*;
 
 import java.awt.EventQueue;
 
 import DAOs.*;
-import UserInterface.Login;
 
 /**
  * Manages the operations of the club.
@@ -25,27 +24,44 @@ public class ClubController {
 		try {
 			executiveDAO = new ExecutiveDAO();
 		} catch (Exception e) {
-			// JOptionPane.showMessageDialog(this, "Error: " + e, "Error", JOptionPane.ERROR_MESSAGE);
 			System.out.println(e);
 		}
+		
+		executive = new President();
 	}
 	
+	public String getExecutiveLastName() {//throws Exception {
+		if (executive.getLastName() == null) {
+			return "";
+		}
+		return executive.getLastName();
+		/*
+		 * try { return executive.getLastName(); } catch (Exception e) { return ""; }
+		 */
+	}
 	
-
-	public void login() {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Login frame = new Login(executiveDAO);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+	public String getExecutivePosition() {//throws Exception {
+		return executive.getClass().getName();
+		/*
+		 * try { return executive.getClass().getName(); } catch (Exception e) { return
+		 * "Executive"; }
+		 */
 	}
 
-	public void addMember() {}
+	public Executive login(String lastName, String password) {
+		try 
+		{
+			executive = executiveDAO.login(lastName, password);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return executive;
+	}
+
+	public void addMember(String firstName, String lastName, String email, String major) {
+		executive.addMember(firstName, lastName, email, major);
+	}
 	public void editMember() {}
 	public void viewMember() {}
 	public void removeMember() {}
